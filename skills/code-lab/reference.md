@@ -104,8 +104,14 @@ job. "Everything, mixed" holds every card.
 white on A4, 8 cards a page (95 x 68 mm) with dashed cut lines. Each fronts sheet is followed by
 its backs sheet with the columns swapped, so a double-sided print with "flip on long edge" puts
 every answer behind its question. Every card shows its deck and number on both sides. Long
-answers get a smaller font. In a sandboxed frame `window.print()` can be ignored, so the note
-tells the learner to press Ctrl+P.
+answers get a smaller font.
+
+The claude.ai viewer frames the page and ignores `window.print()`. So when
+`claude.use("downloads")` resolves, the button saves a standalone print-ready HTML file
+("<lab> - <deck> flashcards.html") that opens the print window when the learner opens it.
+Publish the page with `capabilities: {downloads: true}` for this to work. Anywhere else (a local
+file, another host) the button prints in place. The card CSS lives in `<style id="fcpCss">` so
+the saved file can carry it: keep every `.fcp` rule there.
 
 ## Theme
 

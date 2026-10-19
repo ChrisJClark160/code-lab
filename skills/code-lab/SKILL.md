@@ -55,7 +55,8 @@ file format, HTML convention and JS helper.
     Fix everything the test reports. Then script-click every task once in jsdom and check that
     each one completes. Take one screenshot of a busy lesson (headless Chrome) and fix any
     layout problems.
-11. **Publish or hand over** the built page. If the host has an Artifact tool, publish it. Keep
+11. **Publish or hand over** the built page. If the host has an Artifact tool, publish it with
+    `capabilities: {downloads: true}` so "Print this deck" can save its print-ready file. Keep
     the lab folder with the user's project, not in this plugin, so it can be rebuilt later.
 
 ## Rules

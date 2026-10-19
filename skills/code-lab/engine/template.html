@@ -284,27 +284,6 @@ kbd { font-family: var(--mono); font-size: 0.75rem; border: 1px solid var(--line
 .fc-print { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-top: 12px; border-top: 1px solid var(--line); }
 .fc-printnote { font-size: 0.8rem; color: var(--muted); margin: 0; flex: 1 1 260px; }
 /* printable cards: black and white, A4, 8 a page, fronts then mirrored backs for long-edge duplex */
-.fcp { display: none; }
-.fcp-sheet { width: 210mm; height: 297mm; padding: 12.5mm 10mm; box-sizing: border-box; display: grid; grid-template-columns: repeat(2, 95mm); grid-template-rows: repeat(4, 68mm); break-after: page; page-break-after: always; }
-.fcp-card { box-sizing: border-box; border: 0.3mm dashed #000; padding: 4mm 6mm; display: grid; grid-template-rows: auto 1fr auto; gap: 2mm; overflow: hidden; color: #000; background: #fff; font-family: Arial, Helvetica, sans-serif; }
-.fcp-card.blank { border-color: transparent; }
-.fcp-top { display: flex; justify-content: space-between; gap: 4mm; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.08em; }
-.fcp-body { display: grid; align-content: center; justify-items: center; text-align: center; gap: 2mm; min-width: 0; }
-.fcp-q { font-size: 12.5pt; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
-.fcp-a { font-size: 10pt; line-height: 1.4; overflow-wrap: anywhere; }
-.fcp-a.s { font-size: 8.5pt; }
-.fcp-a.xs { font-size: 7.5pt; }
-.fcp-sub { font-size: 8pt; line-height: 1.35; }
-.fcp-foot { font-size: 6.5pt; text-align: center; text-transform: uppercase; letter-spacing: 0.08em; }
-.fcp code, .fcp .hn code.rn { font-family: "Courier New", monospace; font-size: 0.92em; background: none; color: #000; border: 0; padding: 0; }
-.fcp .hn { display: inline; }
-.fcp .hn b { font-weight: 700; margin-right: 3px; }
-@media print {
-  @page { size: A4 portrait; margin: 0; }
-  body.fc-printing { background: #fff !important; color: #000 !important; margin: 0; }
-  body.fc-printing > *:not(.fcp) { display: none !important; }
-  body.fc-printing .fcp { display: block; print-color-adjust: economy; -webkit-print-color-adjust: economy; }
-}
 
 /* quiz */
 .task.quiz { border-color: var(--teal); }
@@ -370,6 +349,30 @@ td .hn { display: inline; }
 td .hn b { margin-right: 4px; }
 {{EXTRA_CSS}}
 </style>
+<style id="fcpCss">
+.fcp { display: none; }
+.fcp-sheet { width: 210mm; height: 297mm; padding: 12.5mm 10mm; box-sizing: border-box; display: grid; grid-template-columns: repeat(2, 95mm); grid-template-rows: repeat(4, 68mm); break-after: page; page-break-after: always; }
+.fcp-card { box-sizing: border-box; border: 0.3mm dashed #000; padding: 4mm 6mm; display: grid; grid-template-rows: auto 1fr auto; gap: 2mm; overflow: hidden; color: #000; background: #fff; font-family: Arial, Helvetica, sans-serif; }
+.fcp-card.blank { border-color: transparent; }
+.fcp-top { display: flex; justify-content: space-between; gap: 4mm; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.08em; }
+.fcp-body { display: grid; align-content: center; justify-items: center; text-align: center; gap: 2mm; min-width: 0; }
+.fcp-q { font-size: 12.5pt; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.fcp-a { font-size: 10pt; line-height: 1.4; overflow-wrap: anywhere; }
+.fcp-a.s { font-size: 8.5pt; }
+.fcp-a.xs { font-size: 7.5pt; }
+.fcp-sub { font-size: 8pt; line-height: 1.35; }
+.fcp-foot { font-size: 6.5pt; text-align: center; text-transform: uppercase; letter-spacing: 0.08em; }
+.fcp code, .fcp .hn code.rn { font-family: "Courier New", monospace; font-size: 0.92em; background: none; color: #000; border: 0; padding: 0; }
+.fcp .hn { display: inline; }
+.fcp code.rn::before { content: "["; } .fcp code.rn::after { content: "]"; }
+.fcp .hn b { font-weight: 700; margin-right: 3px; }
+@media print {
+  @page { size: A4 portrait; margin: 0; }
+  body.fc-printing { background: #fff !important; color: #000 !important; margin: 0; }
+  body.fc-printing > *:not(.fcp) { display: none !important; }
+  body.fc-printing .fcp { display: block; print-color-adjust: economy; -webkit-print-color-adjust: economy; }
+}
+</style>
 
 <header class="mast">
   <div class="mast-in">
@@ -405,7 +408,7 @@ td .hn b { margin-right: 4px; }
       <label class="inline" for="fcOnlyNew"><input type="checkbox" id="fcOnlyNew"> Only cards I don't know yet</label>
     </div>
     <div class="fc-print"><button class="btn sm" id="fcPrint">Print this deck</button>
-      <p class="fc-printnote" id="fcPrintNote">Black and white on A4, 8 cards a page. Print double-sided with "flip on long edge", then cut along the dashed lines. If no print window opens, press Ctrl+P.</p></div>
+      <p class="fc-printnote" id="fcPrintNote">Saves a print-ready file of this deck. Open it and the print window appears: black and white on A4, 8 cards a page. Print double-sided with "flip on long edge", then cut along the dashed lines.</p></div>
   </div>
 
   <div class="fc-wrap" id="fcWrap">
@@ -1044,6 +1047,8 @@ td .hn b { margin-right: 4px; }
   });
   // printable deck: a fronts sheet then a backs sheet with each row mirrored, so a long-edge
   // double-sided print puts every answer behind its question
+  // claude.ai frames the page and ignores window.print(), so save a standalone file instead
+  var downloadsP = window.claude && window.claude.use ? window.claude.use("downloads") : Promise.resolve(null);
   function printFace(c, i, d) {
     var src = c.src || d, f, b, len;
     if (src.names) {
@@ -1075,8 +1080,22 @@ td .hn b { margin-right: 4px; }
     if (!box) { box = document.createElement("div"); box.id = "fcPrintBox"; box.className = "fcp"; document.body.appendChild(box); }
     box.innerHTML = html;
     annotate(box);
-    document.body.classList.add("fc-printing");
-    try { window.print(); } catch (e) {}
+    var note = $("#fcPrintNote"), title = ($(".mast h1") || {}).textContent || document.title;
+    function printHere() { document.body.classList.add("fc-printing"); try { window.print(); } catch (e) {} }
+    downloadsP.then(function (dl) {
+      if (!dl) return printHere();
+      var doc = '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>' + esc(title + " - " + d.name) + "</title><style>" + $("#fcpCss").textContent +
+        "@media screen { body { margin: 0; padding: 16px; background: #E5E5E5; font-family: Arial, sans-serif; } .fcp { display: block; } .fcp-sheet { background: #fff; margin: 0 auto 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); } .fcp-help { max-width: 210mm; margin: 0 auto 16px; } }" +
+        '@media print { .fcp-help { display: none; } }</style></head><body class="fc-printing"><p class="fcp-help">Press Ctrl+P if the print window did not open. Print double-sided with "flip on long edge", then cut along the dashed lines.</p><div class="fcp">' +
+        box.innerHTML + '</div><script>window.addEventListener("load", function () { window.print(); });<\/script></body></html>';
+      var file = (title + " - " + d.name + " flashcards.html").replace(/[\\/:*?"<>|]+/g, "");
+      dl.save({ filename: file, data: doc }).then(function () {
+        note.textContent = "Saved " + file + ". Open it and the print window appears. Print double-sided with \"flip on long edge\", then cut along the dashed lines.";
+      }, function (e) {
+        note.textContent = e && e.code === "declined" ? "Not saved. Click Print this deck to try again." : "This view can't save files. Press Ctrl+P to print the cards instead.";
+        if (!e || e.code !== "declined") document.body.classList.add("fc-printing");
+      });
+    });
   }
   $("#fcPrint").addEventListener("click", printDeck);
   window.addEventListener("afterprint", function () { document.body.classList.remove("fc-printing"); });
