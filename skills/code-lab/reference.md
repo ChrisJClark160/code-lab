@@ -93,6 +93,20 @@ Question ids must be unique across the whole lab. `why` is shown when the answer
 name. A deck whose `id` matches a lesson's `data-id` adds a "Revise with flashcards" card to
 that lesson.
 
+Don't write the plain name yourself before a backticked real name ("Step list `CONFIG.Processes`").
+The engine adds it, so it would show twice. `test.js` fails on this.
+
+The engine adds two decks. "Who's who" has one card per `NAMES` entry, showing
+"Plain name [real name]" on both sides; the front asks "What does it do?" and the back gives the
+job. "Everything, mixed" holds every card.
+
+**Printing.** "Print this deck" sits under the deck picker. It prints the chosen deck in black and
+white on A4, 8 cards a page (95 x 68 mm) with dashed cut lines. Each fronts sheet is followed by
+its backs sheet with the columns swapped, so a double-sided print with "flip on long edge" puts
+every answer behind its question. Every card shows its deck and number on both sides. Long
+answers get a smaller font. In a sandboxed frame `window.print()` can be ignored, so the note
+tells the learner to press Ctrl+P.
+
 ## Theme
 
 Every colour is a token on `:root`, with a dark set under `prefers-color-scheme` and

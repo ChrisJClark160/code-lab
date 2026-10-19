@@ -12,7 +12,8 @@ Each lab is a single HTML page with:
 - a quiz per lesson (multiple choice, select all, drag to match, drag to order, typed)
 - a bug hunt built from the repo's real history
 - "do it for real" tasks with copyable commands
-- flashcards with spaced repeats, and a final test
+- flashcards with spaced repeats, printable as black and white double-sided cards to cut out
+- a final test
 - progress saved in the browser, light and dark themes, and layouts that work on a phone
 
 ## Install

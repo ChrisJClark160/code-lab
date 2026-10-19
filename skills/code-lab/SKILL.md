@@ -45,7 +45,8 @@ file format, HTML convention and JS helper.
 9. **Write the quiz and the decks.** Each lesson gets 5 to 7 questions in mixed types. The final
    test picks 12 at random, and 10 right is a pass. Each lesson gets a flashcard deck with the
    same `id` as the lesson, so its Revise button appears. The engine adds the "Who's who" deck
-   from `NAMES` and the mixed deck.
+   from `NAMES` (both names on both sides) and the mixed deck, and a "Print this deck" button
+   for black and white, double-sided cards to cut out (see reference.md).
 10. **Build and test.**
     ```
     python engine/build.py <lab_folder> <output.html>

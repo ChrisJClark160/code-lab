@@ -281,6 +281,30 @@ kbd { font-family: var(--mono); font-size: 0.75rem; border: 1px solid var(--line
 .revise { background: var(--panel-2); border-color: var(--panel-2); }
 @media (max-width: 560px) { .fc-face { min-height: 260px; padding: 16px 18px 18px; } .fc-q { font-size: 1.2rem; } .fc-a { font-size: 1.02rem; } }
 @media (prefers-reduced-motion: reduce) { .fc-inner { transition: none; } }
+.fc-print { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.fc-printnote { font-size: 0.8rem; color: var(--muted); margin: 0; flex: 1 1 260px; }
+/* printable cards: black and white, A4, 8 a page, fronts then mirrored backs for long-edge duplex */
+.fcp { display: none; }
+.fcp-sheet { width: 210mm; height: 297mm; padding: 12.5mm 10mm; box-sizing: border-box; display: grid; grid-template-columns: repeat(2, 95mm); grid-template-rows: repeat(4, 68mm); break-after: page; page-break-after: always; }
+.fcp-card { box-sizing: border-box; border: 0.3mm dashed #000; padding: 4mm 6mm; display: grid; grid-template-rows: auto 1fr auto; gap: 2mm; overflow: hidden; color: #000; background: #fff; font-family: Arial, Helvetica, sans-serif; }
+.fcp-card.blank { border-color: transparent; }
+.fcp-top { display: flex; justify-content: space-between; gap: 4mm; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.08em; }
+.fcp-body { display: grid; align-content: center; justify-items: center; text-align: center; gap: 2mm; min-width: 0; }
+.fcp-q { font-size: 12.5pt; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.fcp-a { font-size: 10pt; line-height: 1.4; overflow-wrap: anywhere; }
+.fcp-a.s { font-size: 8.5pt; }
+.fcp-a.xs { font-size: 7.5pt; }
+.fcp-sub { font-size: 8pt; line-height: 1.35; }
+.fcp-foot { font-size: 6.5pt; text-align: center; text-transform: uppercase; letter-spacing: 0.08em; }
+.fcp code, .fcp .hn code.rn { font-family: "Courier New", monospace; font-size: 0.92em; background: none; color: #000; border: 0; padding: 0; }
+.fcp .hn { display: inline; }
+.fcp .hn b { font-weight: 700; margin-right: 3px; }
+@media print {
+  @page { size: A4 portrait; margin: 0; }
+  body.fc-printing { background: #fff !important; color: #000 !important; margin: 0; }
+  body.fc-printing > *:not(.fcp) { display: none !important; }
+  body.fc-printing .fcp { display: block; print-color-adjust: economy; -webkit-print-color-adjust: economy; }
+}
 
 /* quiz */
 .task.quiz { border-color: var(--teal); }
@@ -379,9 +403,9 @@ td .hn b { margin-right: 4px; }
     <div class="row fc-opts">
       <label class="inline" for="fcShuffle"><input type="checkbox" id="fcShuffle" checked> Shuffle</label>
       <label class="inline" for="fcOnlyNew"><input type="checkbox" id="fcOnlyNew"> Only cards I don't know yet</label>
-      <span class="row" id="fcDirRow" hidden><label class="inline" for="fcDir">Who's who cards show</label>
-        <select id="fcDir"><option value="plain">the plain name</option><option value="real">the real name</option></select></span>
     </div>
+    <div class="fc-print"><button class="btn sm" id="fcPrint">Print this deck</button>
+      <p class="fc-printnote" id="fcPrintNote">Black and white on A4, 8 cards a page. Print double-sided with "flip on long edge", then cut along the dashed lines. If no print window opens, press Ctrl+P.</p></div>
   </div>
 
   <div class="fc-wrap" id="fcWrap">
@@ -930,7 +954,6 @@ td .hn b { margin-right: 4px; }
       return '<button class="deck' + (d === fc.deck ? " on" : "") + '" data-deck="' + d.id + '" title="' + known + " of " + d.cards.length + ' known"><span class="dn">' + esc(d.name) + '</span><span class="dk">' + known + "/" + d.cards.length + '</span><i class="dbar" style="width:' + (100 * known / d.cards.length) + '%"></i></button>';
     }).join("");
     $$("#fcDecks .deck").forEach(function (b) { b.addEventListener("click", function () { pickDeck(b.getAttribute("data-deck")); startDeck(); var w = $("#fcWrap"); if (w.scrollIntoView) w.scrollIntoView({ behavior: "smooth", block: "start" }); }); });
-    $("#fcDirRow").hidden = !(fc.deck.names || fc.deck.mix);
   }
   function pickDeck(id) { fc.deck = deckById(id); drawDecks(); }
   function startDeck(onlyIds) {
@@ -950,13 +973,11 @@ td .hn b { margin-right: 4px; }
     $("#fcCard").classList.remove("flipped");
     $("#fcCard").setAttribute("aria-label", "Flashcard. Press to reveal the answer.");
     if (d.names) {
-      var realFirst = $("#fcDir").value === "real";
-      var ask = realFirst ? "What is its plain name and job?" : "What is the real name?";
-      front = '<div class="fc-q' + (realFirst ? " mono" : "") + '">' + esc(realFirst ? c[0] : c[1]) + '</div>';
-      hint = ask;
-      qs = esc(realFirst ? c[0] : c[1]);
-      back = realFirst ? '<div class="fc-a"><b>' + esc(c[1]) + "</b></div><p>" + esc(c[2]) + "</p>"
-                       : '<div class="fc-a mono">' + esc(c[0]) + "</div><p>" + esc(c[2]) + "</p>";
+      // both names on both sides; the card tests the job
+      front = '<div class="fc-q">' + nm(c[0]) + "</div>";
+      hint = "What does it do?";
+      qs = nm(c[0]);
+      back = '<div class="fc-a">' + esc(c[2]) + "</div>";
     } else {
       front = '<div class="fc-q">' + fmt(c[0]) + '</div>';
       hint = "Answer in your head, then click the card";
@@ -1010,7 +1031,6 @@ td .hn b { margin-right: 4px; }
   $("#fcReveal").addEventListener("click", flip);
   $("#fcGot").addEventListener("click", function () { grade(true); });
   $("#fcNot").addEventListener("click", function () { grade(false); });
-  $("#fcDir").addEventListener("change", function () { if (fc.queue.length && $("#fcDone").hidden) drawCard(); });
   // the mixed deck is always shuffled
   function shuffleOn() { return fc.deck.mix || $("#fcShuffle").checked; }
   $("#fcOnlyNew").addEventListener("change", function () { startDeck(); });
@@ -1022,6 +1042,45 @@ td .hn b { margin-right: 4px; }
     fc.deck.cards.forEach(function (c) { delete state.cards[cid(fc.deck, c)]; }); save();
     b.removeAttribute("data-armed"); b.textContent = "Forget this deck"; drawDecks(); startDeck();
   });
+  // printable deck: a fronts sheet then a backs sheet with each row mirrored, so a long-edge
+  // double-sided print puts every answer behind its question
+  function printFace(c, i, d) {
+    var src = c.src || d, f, b, len;
+    if (src.names) {
+      f = '<div class="fcp-q">' + nm(c[0]) + '</div><div class="fcp-sub">What does it do?</div>';
+      b = '<div class="fcp-q">' + nm(c[0]) + '</div><div class="fcp-a">' + esc(c[2]) + "</div>";
+    } else {
+      len = String(c[1]).length;
+      f = '<div class="fcp-q">' + fmt(c[0]) + "</div>";
+      b = '<div class="fcp-a' + (len > 280 ? " xs" : len > 170 ? " s" : "") + '">' + fmt(c[1]) + "</div>";
+    }
+    var top = '<div class="fcp-top"><span>' + esc(src.name) + "</span><span>" + (i + 1) + "</span></div>";
+    return { f: top + '<div class="fcp-body">' + f + '</div><div class="fcp-foot">Question</div>',
+             b: top + '<div class="fcp-body">' + b + '</div><div class="fcp-foot">Answer</div>' };
+  }
+  function printSheet(cells, side) {
+    return '<div class="fcp-sheet">' + cells.map(function (x) {
+      return x ? '<div class="fcp-card">' + x[side] + "</div>" : '<div class="fcp-card blank"></div>';
+    }).join("") + "</div>";
+  }
+  function printDeck() {
+    var d = fc.deck, faces = d.cards.map(function (c, i) { return printFace(c, i, d); }), html = "";
+    for (var p = 0; p < faces.length; p += 8) {
+      var page = faces.slice(p, p + 8), back = [];
+      while (page.length < 8) page.push(null);
+      for (var r = 0; r < 8; r += 2) back.push(page[r + 1], page[r]);
+      html += printSheet(page, "f") + printSheet(back, "b");
+    }
+    var box = $("#fcPrintBox");
+    if (!box) { box = document.createElement("div"); box.id = "fcPrintBox"; box.className = "fcp"; document.body.appendChild(box); }
+    box.innerHTML = html;
+    annotate(box);
+    document.body.classList.add("fc-printing");
+    try { window.print(); } catch (e) {}
+  }
+  $("#fcPrint").addEventListener("click", printDeck);
+  window.addEventListener("afterprint", function () { document.body.classList.remove("fc-printing"); });
+
   document.addEventListener("keydown", function (e) {
     if ($("#fcSection").hidden) return;
     var tag = (e.target.tagName || "").toLowerCase();

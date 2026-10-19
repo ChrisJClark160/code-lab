@@ -15,6 +15,7 @@ const dom = new JSDOM("<!doctype html><html><head></head><body>" + html + "</bod
   { runScripts: "dangerously", url: "https://example.org/", virtualConsole: vc, pretendToBeVisual: true });
 const w = dom.window, d = w.document;
 w.scrollTo = () => {};
+w.print = () => {};
 const $ = s => d.querySelector(s), $$ = s => [...d.querySelectorAll(s)];
 const fail = m => errs.push("FAIL: " + m);
 
@@ -36,6 +37,13 @@ setTimeout(() => {
     if ($$("#fcDecks .deck").length) {
       $$("#fcDecks .deck")[0].click(); $("#fcReveal").click(); $("#fcGot").click();
       out.push("decks: " + $$("#fcDecks .deck").length);
+      // printable deck: two sheets (fronts, backs) per 8 cards
+      const nCards = +$$("#fcDecks .deck")[0].querySelector(".dk").textContent.split("/")[1];
+      $("#fcPrint").click();
+      const sheets = $$("#fcPrintBox .fcp-sheet").length;
+      out.push("print sheets: " + sheets + " for " + nCards + " cards");
+      if (sheets !== 2 * Math.ceil(nCards / 8)) fail("print sheets do not match the deck size");
+      if ($$("#fcPrintBox .fcp-card:not(.blank)").length !== 2 * nCards) fail("print cards do not match the deck size");
     } else fail("no flashcard decks");
     // every quiz question renders a body
     $$(".task.quiz .qz").forEach((q, i) => { if (!q.querySelector(".qz-body").children.length) fail("empty quiz question " + i); });
