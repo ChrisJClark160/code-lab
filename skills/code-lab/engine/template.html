@@ -1,0 +1,1058 @@
+<title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: coloured masthead band with progress, then a lesson rail beside one lesson at a time. Code sits on dark panels in both themes. */
+:root {
+  --orange: #FE4212;
+  --blue: #1C2040;
+  --teal: #016B83;
+  --bteal: #64C6BF;
+  --bg: #F6F6F6;
+  --panel: #FFFFFF;
+  --panel-2: #FEE2DB;
+  --soft: #CCECEA;
+  --fg: #1C2040;
+  --muted: #4A4F6B;
+  --line: #CDCDCD;
+  --code-bg: #1C2040;
+  --code-fg: #F1F2F8;
+  --code-dim: #9EA3C4;
+  --code-kw: #FF9B7E;
+  --code-str: #A8E3DE;
+  --code-num: #FFD27A;
+  --code-com: #8A90B4;
+  --code-hl: rgba(254, 66, 18, 0.28);
+  --ok: #0F7B3E;
+  --ok-bg: #DDF3E6;
+  --bad: #B3261E;
+  --bad-bg: #FBE3E1;
+  --warn-bg: #FFF1D6;
+  --btn: #1C2040;
+  --btn-fg: #FFFFFF;
+  --mast-fg: #1C2040;
+  --font: "Poppins", Arial, sans-serif;
+  --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12152B; --panel: #1C2040; --panel-2: #2A2440; --soft: #173A4A; --fg: #F1F2F8; --muted: #B7BBD6; --line: #343A63;
+    --code-bg: #0B0D1C; --ok: #6FD39A; --ok-bg: #12372A; --bad: #FF8A80; --bad-bg: #3D1C24; --warn-bg: #3A3120;
+    --btn: #FE4212; --btn-fg: #1C2040; --mast-fg: #1C2040; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12152B; --panel: #1C2040; --panel-2: #2A2440; --soft: #173A4A; --fg: #F1F2F8; --muted: #B7BBD6; --line: #343A63;
+  --code-bg: #0B0D1C; --ok: #6FD39A; --ok-bg: #12372A; --bad: #FF8A80; --bad-bg: #3D1C24; --warn-bg: #3A3120;
+  --btn: #FE4212; --btn-fg: #1C2040; --mast-fg: #1C2040; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.6; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.25; margin: 0; }
+p { margin: 0; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+:not(pre) > code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--bteal); outline-offset: 2px; }
+
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--orange); }
+.mast { background: var(--orange); color: var(--mast-fg); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
+.mast-in { max-width: 1200px; margin: 0 auto; padding-block: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; }
+.mast h1 { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.01em; }
+.mast .sub { font-size: 0.85rem; font-weight: 500; }
+.prog { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 200px; flex: 0 1 320px; }
+.bar { flex: 1; height: 10px; background: rgba(28, 32, 64, 0.2); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--blue); transition: width .4s; }
+.prog b { font-size: 0.85rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.wrap { max-width: 1200px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 28px; align-items: start; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); display: grid; gap: 4px; }
+.rail .lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; padding: 0 10px 6px; }
+.rail button { text-align: left; background: transparent; border: 0; border-radius: 8px; padding: 9px 10px; cursor: pointer; display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; align-items: center; font-size: 0.9rem; color: var(--fg); }
+.rail button:hover { background: var(--panel); }
+.rail button[aria-current="true"] { background: var(--panel); box-shadow: inset 3px 0 0 var(--orange); font-weight: 600; }
+.rail .n { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 0.72rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rail .done .n { background: var(--ok); border-color: var(--ok); color: var(--panel); }
+.rail .cnt { font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rail .reset { margin-top: 12px; font-size: 0.78rem; color: var(--muted); text-decoration: underline; display: block; }
+
+[hidden] { display: none !important; }
+.lesson { display: grid; gap: 22px; min-width: 0; }
+.lesson-head { display: grid; gap: 8px; }
+.eyebrow { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; color: var(--teal); }
+:root[data-theme="dark"] .eyebrow { color: var(--bteal); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .eyebrow { color: var(--bteal); } }
+.lesson h2 { font-size: 1.9rem; font-weight: 700; }
+.lede { max-width: 68ch; color: var(--muted); font-size: 1rem; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.card h3 { font-size: 1.1rem; font-weight: 600; }
+.prose { max-width: 70ch; display: grid; gap: 10px; }
+.prose ul, .prose ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.task { border: 2px solid var(--orange); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 14px; background: var(--panel); min-width: 0; }
+.task-h { display: flex; align-items: flex-start; gap: 12px; }
+.task-h .tag { background: var(--orange); color: var(--blue); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+.task-h h3 { font-size: 1.05rem; font-weight: 600; flex: 1; }
+.task.done { border-color: var(--ok); }
+.task.done .task-h .tag { background: var(--ok); color: var(--panel); }
+.tick { display: none; color: var(--ok); font-weight: 700; font-size: 0.85rem; white-space: nowrap; }
+.task.done .tick { display: inline; }
+
+.btn { background: var(--btn); color: var(--btn-fg); border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 600; cursor: pointer; box-shadow: 0 3px 0 rgba(28, 32, 64, 0.35); }
+.btn:active { transform: translateY(2px); box-shadow: none; }
+.btn.ghost { background: transparent; color: var(--fg); border: 2px solid var(--line); box-shadow: none; }
+.btn.sm { padding: 5px 11px; font-size: 0.85rem; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.chip { border: 2px solid var(--line); background: var(--panel); border-radius: 99px; padding: 6px 13px; cursor: pointer; font-size: 0.88rem; }
+.chip:hover { border-color: var(--orange); }
+.chip[disabled] { opacity: 0.35; cursor: default; }
+.fb { border-radius: 8px; padding: 10px 14px; font-size: 0.92rem; }
+.fb.ok { background: var(--ok-bg); color: var(--ok); }
+.fb.bad { background: var(--bad-bg); color: var(--bad); }
+.fb.info { background: var(--soft); color: var(--fg); }
+.fb:empty { display: none; }
+input[type="text"], input[type="number"], select, textarea { background: var(--bg); border: 2px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+textarea { width: 100%; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; resize: vertical; }
+label.inline { display: inline-flex; gap: 6px; align-items: center; font-size: 0.9rem; cursor: pointer; }
+
+/* code */
+.code { background: var(--code-bg); color: var(--code-fg); border-radius: var(--r); padding: 14px 0; overflow-x: auto; font-family: var(--mono); font-size: 0.8rem; line-height: 1.65; }
+.code .l { display: grid; grid-template-columns: 44px max-content; padding-right: 16px; white-space: pre; }
+.code .l::before { content: attr(data-n); color: var(--code-dim); text-align: right; padding-right: 14px; user-select: none; }
+.code .l.hl { background: var(--code-hl); box-shadow: inset 3px 0 0 var(--orange); }
+.code.pick .l { cursor: pointer; }
+.code.pick .l:hover { background: rgba(255, 255, 255, 0.07); }
+.code .l.wrong { background: rgba(179, 38, 30, 0.35); }
+.code .l.right { background: rgba(15, 123, 62, 0.5); }
+.k { color: var(--code-kw); } .s { color: var(--code-str); } .nm { color: var(--code-num); } .c { color: var(--code-com); font-style: italic; }
+.codecap { font-size: 0.78rem; color: var(--muted); font-family: var(--mono); }
+.codecap b { font-family: var(--font); color: var(--fg); font-weight: 600; font-size: 0.85rem; }
+.hn { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; }
+.hn b { font-weight: 600; }
+code.rn { color: var(--muted); font-size: 0.8em; overflow-wrap: anywhere; }
+code.rn::before { content: "["; } code.rn::after { content: "]"; }
+.node .hname { font-weight: 600; font-size: 1rem; }
+.cast { display: grid; gap: 10px; }
+ol.steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 75ch; }
+ol.steps li::marker { font-weight: 700; color: var(--teal); }
+.cast-search { width: min(100%, 360px); }
+.castg { border: 1px solid var(--line); border-radius: var(--r); background: var(--bg); }
+.castg > summary { cursor: pointer; padding: 10px 14px; font-weight: 600; display: flex; justify-content: space-between; gap: 10px; list-style: none; }
+.castg > summary::-webkit-details-marker { display: none; }
+.castg > summary::after { content: "+"; color: var(--muted); font-weight: 700; }
+.castg[open] > summary::after { content: "\2212"; }
+.castg > summary .cn { color: var(--muted); font-weight: 500; font-size: 0.82rem; margin-left: auto; }
+.cast-rows { display: grid; }
+.cast-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 4px 20px; padding: 9px 14px; border-top: 1px solid var(--line); align-items: start; }
+.cast-row .who { display: grid; gap: 1px; min-width: 0; }
+.cast-row .who b { font-weight: 600; }
+.cast-row .who code { color: var(--muted); font-size: 0.78rem; overflow-wrap: anywhere; background: none; padding: 0; }
+.cast-row .job { font-size: 0.86rem; color: var(--muted); min-width: 0; }
+@media (max-width: 600px) { .cast-row { grid-template-columns: minmax(0, 1fr); } }
+
+/* flow diagram */
+.flow { display: grid; gap: 0; justify-items: stretch; max-width: 560px; }
+.node { border: 2px solid var(--line); background: var(--panel); border-radius: var(--r); padding: 10px 14px; cursor: pointer; text-align: left; display: grid; gap: 2px; }
+.node:hover { border-color: var(--orange); }
+.node[aria-pressed="true"] { border-color: var(--orange); background: var(--panel-2); }
+.node .t { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+.node .nmn { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; word-break: break-word; }
+.node.nb { border-style: dashed; }
+.arrow { height: 22px; display: grid; place-items: center; color: var(--orange); font-weight: 700; font-size: 0.9rem; line-height: 1; }
+.flowgrid { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 90px); }
+
+.scroll { overflow-x: auto; }
+table.t { border-collapse: collapse; width: 100%; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
+table.t th, table.t td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.t th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+table.t td.wrap { white-space: normal; min-width: 220px; }
+.pill { display: inline-block; padding: 1px 9px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.p-3 { background: var(--ok-bg); color: var(--ok); }
+.p-1 { background: var(--bad-bg); color: var(--bad); }
+.p-0, .p--1 { background: var(--warn-bg); color: var(--fg); }
+.p-4, .p-2, .p-5 { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+
+.svgwrap { overflow-x: auto; }
+.svgwrap svg { display: block; min-width: 640px; width: 100%; height: auto; }
+svg text { font-family: var(--font); fill: var(--fg); }
+svg .box { fill: var(--panel); stroke: var(--line); stroke-width: 2; }
+svg .box.o { fill: var(--orange); stroke: var(--orange); }
+svg .box.src { fill: var(--soft); stroke: var(--soft); }
+svg .box.empty { fill: var(--bg); stroke: var(--line); stroke-dasharray: 5 4; }
+svg .ln { stroke: var(--muted); stroke-width: 2; fill: none; }
+svg .ln.dash { stroke-dasharray: 5 4; }
+svg .hd { font-weight: 700; font-size: 15px; }
+svg .sm { font-size: 11.5px; fill: var(--muted); }
+svg .on-o { fill: var(--blue); }
+svg .ah { fill: var(--muted); }
+
+.flash { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.fcard { border: 2px solid var(--line); border-radius: var(--r); padding: 12px; display: grid; gap: 8px; background: var(--bg); }
+.fcard .big { font-size: 1.8rem; font-weight: 800; font-family: var(--mono); line-height: 1; }
+.fcard select { width: 100%; }
+.fcard.ok { border-color: var(--ok); }
+.fcard.bad { border-color: var(--bad); }
+
+.stepnav { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.stepnav .of { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.explain { background: var(--panel-2); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 6px; min-height: 110px; }
+.explain b { font-weight: 600; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.gantt { overflow-x: auto; }
+.gantt svg { display: block; min-width: 560px; width: 100%; height: auto; }
+.gantt .bar-ok { fill: var(--bteal); }
+.gantt .bar-bad { fill: var(--bad); }
+.gantt .bar-big { fill: var(--orange); }
+.gantt text { font-size: 10px; }
+.gantt .grid { stroke: var(--line); stroke-width: 1; }
+.out { background: var(--code-bg); color: var(--code-fg); font-family: var(--mono); font-size: 0.8rem; border-radius: 8px; padding: 12px 14px; white-space: pre-wrap; overflow-x: auto; }
+.mcq { display: grid; gap: 8px; }
+.mcq button { text-align: left; border: 2px solid var(--line); background: var(--bg); border-radius: 8px; padding: 9px 12px; cursor: pointer; }
+.mcq button:hover { border-color: var(--orange); }
+.mcq button.right { border-color: var(--ok); background: var(--ok-bg); }
+.mcq button.wrong { border-color: var(--bad); background: var(--bad-bg); }
+.q { font-weight: 600; }
+.cfg td input[type="checkbox"] { width: 18px; height: 18px; }
+.check { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
+.check input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--ok); }
+.copyrow { display: flex; justify-content: flex-end; }
+.note { font-size: 0.82rem; color: var(--muted); }
+.navfoot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+/* flashcards */
+:root { --fc-back: #1C2040; --fc-back-fg: #FFFFFF; --fc-back-dim: #CCECEA; --fc-got: #0F7B3E; --fc-not: #B3261E; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fc-back: #0E4A5A; --fc-back-dim: #CCECEA; --fc-not: #FF8A80; } }
+:root[data-theme="dark"] { --fc-back: #0E4A5A; --fc-back-dim: #CCECEA; --fc-not: #FF8A80; }
+.fc-pick { display: grid; gap: 12px; }
+.decks { display: flex; flex-wrap: wrap; gap: 8px; }
+.deck { position: relative; overflow: hidden; display: inline-flex; align-items: baseline; gap: 8px; border: 2px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 99px; padding: 6px 14px 8px; cursor: pointer; font: inherit; font-size: 0.88rem; }
+.deck:hover { border-color: var(--orange); }
+.deck.on { border-color: var(--orange); background: var(--orange); color: #1C2040; }
+.deck .dn { font-weight: 600; }
+.deck .dk { font-size: 0.75rem; opacity: 0.8; font-variant-numeric: tabular-nums; }
+.deck .dbar { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--ok); }
+.deck.on .dbar { background: #1C2040; }
+.fc-opts { font-size: 0.85rem; color: var(--muted); gap: 6px 18px; }
+.fc-opts select { font-size: 0.85rem; }
+.fc-wrap { display: grid; gap: 16px; max-width: 760px; margin: 8px 0 40px; }
+.fc-stage { display: grid; gap: 16px; }
+.fc-stage[hidden], .fc-actions .btn[hidden] { display: none; }
+.fc { perspective: 1600px; cursor: pointer; outline: none; }
+.fc:focus-visible .fc-face { outline: 3px solid var(--bteal); outline-offset: 3px; }
+.fc-inner { display: grid; transition: transform .45s cubic-bezier(.3,.7,.3,1); transform-style: preserve-3d; }
+.fc.flipped .fc-inner { transform: rotateY(180deg); }
+.fc-face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; min-height: 300px; min-width: 0; border-radius: 18px; padding: 18px 28px 22px; display: grid; grid-template-rows: auto 1fr auto; gap: 14px; box-shadow: 0 10px 30px rgba(11, 13, 28, 0.25); }
+.fc-front { background: var(--panel); border: 2px solid var(--line); border-top: 6px solid var(--orange); }
+.fc-back { background: var(--fc-back); color: var(--fc-back-fg); border: 2px solid var(--fc-back); border-top: 6px solid var(--bteal); transform: rotateY(180deg); }
+.fc-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.72rem; font-variant-numeric: tabular-nums; }
+.fc-deck { text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: var(--teal); }
+:root[data-theme="dark"] .fc-deck { color: var(--bteal); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fc-deck { color: var(--bteal); } }
+.fc-back .fc-deck { color: var(--bteal); }
+.fc-num { color: var(--muted); }
+.fc-back .fc-num { color: var(--fc-back-dim); }
+.fc-body { display: grid; align-content: center; justify-items: center; text-align: center; gap: 12px; min-width: 0; }
+.fc-q { font-size: 1.45rem; font-weight: 600; line-height: 1.35; max-width: 32ch; overflow-wrap: anywhere; text-wrap: balance; }
+.fc-qs { font-size: 0.85rem; line-height: 1.45; color: var(--fc-back-dim); max-width: 60ch; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.18); width: 100%; overflow-wrap: anywhere; }
+.fc-a { font-size: 1.15rem; line-height: 1.55; max-width: 52ch; overflow-wrap: anywhere; text-wrap: pretty; }
+.fc-q.mono, .fc-a.mono { font-family: var(--mono); font-size: 1.1rem; }
+.fc-a b { font-size: 1.3rem; }
+.fc-back p { color: var(--fc-back-dim); margin: 0; max-width: 52ch; }
+.fc-back code { background: rgba(255,255,255,0.14); color: #FFFFFF; }
+.fc-back code.rn, .fc-back .hn code.rn { color: var(--fc-back-dim); background: none; }
+.fc-hint { font-size: 0.8rem; color: var(--muted); text-align: center; }
+.fc-back .fc-hint { color: var(--fc-back-dim); }
+.fc-bar { height: 4px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.fc-bar i { display: block; height: 100%; width: 0; background: var(--orange); transition: width .3s; }
+.fc-again { color: var(--orange); font-weight: 600; }
+.fc-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fc-actions .btn { padding: 13px 16px; font-size: 1rem; box-shadow: none; }
+#fcReveal { grid-column: 1 / -1; }
+.fc-actions .fc-not { background: transparent; color: var(--fc-not); border: 2px solid var(--fc-not); }
+.fc-actions .fc-got { background: var(--fc-got); color: #FFFFFF; border: 2px solid var(--fc-got); }
+.fc-not:hover, .fc-got:hover, #fcReveal:hover { filter: brightness(1.08); }
+.fc-keys { text-align: center; font-size: 0.8rem; color: var(--muted); margin: 0; }
+kbd { font-family: var(--mono); font-size: 0.75rem; border: 1px solid var(--line); border-bottom-width: 3px; border-radius: 5px; padding: 0 6px; background: var(--panel); color: var(--fg); }
+.fc-tools { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding-top: 14px; border-top: 1px solid var(--line); }
+.fc-tools .btn { color: var(--muted); }
+.revise { background: var(--panel-2); border-color: var(--panel-2); }
+@media (max-width: 560px) { .fc-face { min-height: 260px; padding: 16px 18px 18px; } .fc-q { font-size: 1.2rem; } .fc-a { font-size: 1.02rem; } }
+@media (prefers-reduced-motion: reduce) { .fc-inner { transition: none; } }
+
+/* quiz */
+.task.quiz { border-color: var(--teal); }
+.task.quiz .task-h .tag { background: var(--teal); color: #FFFFFF; }
+.qz-count { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.qz-list { display: grid; gap: 14px; }
+.qz { border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 10px; background: var(--bg); min-width: 0; }
+.qz.right { border-color: var(--ok); }
+.qz-h { display: flex; justify-content: space-between; gap: 10px; }
+.qz-kind { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: var(--muted); }
+.qz-ok { display: none; font-size: 0.75rem; font-weight: 700; color: var(--ok); }
+.qz.right .qz-ok { display: inline; }
+.qz-actions:empty { display: none; }
+.qz-text { width: min(100%, 420px); font-family: var(--mono); }
+.multi { display: grid; gap: 6px; }
+.multi input { width: 18px; height: 18px; accent-color: var(--orange); }
+.dd { display: grid; gap: 12px; }
+.dd-slots { display: grid; gap: 8px; }
+.dd-row { display: grid; grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.4fr); gap: 10px; align-items: center; }
+.dd-left { font-weight: 600; font-size: 0.9rem; }
+.slot { min-height: 42px; border: 2px dashed var(--line); border-radius: 8px; padding: 4px; display: flex; align-items: center; cursor: pointer; background: var(--panel); min-width: 0; }
+.slot .ph { color: var(--muted); font-size: 0.8rem; padding: 0 8px; }
+.slot.over { border-color: var(--orange); background: var(--panel-2); }
+.slot.good { border-style: solid; border-color: var(--ok); }
+.slot.badc { border-style: solid; border-color: var(--bad); }
+.dd-pool { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; padding: 8px; border-radius: 8px; background: var(--soft); }
+.dchip { background: var(--panel); border: 2px solid var(--line); border-radius: 8px; padding: 5px 10px; font-size: 0.84rem; cursor: grab; user-select: none; max-width: 100%; overflow-wrap: anywhere; font-family: var(--mono); }
+.dchip.sel { border-color: var(--orange); box-shadow: 0 0 0 3px var(--panel-2); }
+.dchip.dragging { opacity: 0.5; }
+.slot .dchip { width: 100%; }
+.ord { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; counter-reset: o; }
+.ord li { counter-increment: o; display: grid; grid-template-columns: 18px 26px minmax(0, 1fr) auto; gap: 8px; align-items: center; background: var(--panel); border: 2px solid var(--line); border-radius: 8px; padding: 6px 8px; cursor: grab; }
+.ord li::before { content: counter(o); grid-column: 2; grid-row: 1; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ord .grip { grid-column: 1; grid-row: 1; color: var(--muted); letter-spacing: -3px; }
+.ord .otext { grid-column: 3; grid-row: 1; font-size: 0.9rem; }
+.ord .obtn { grid-column: 4; grid-row: 1; display: flex; gap: 4px; }
+.ord .obtn .btn { padding: 2px 8px; }
+.ord li.dragging { opacity: 0.5; }
+.ord li.good { border-color: var(--ok); }
+.ord li.badc { border-color: var(--bad); }
+
+@media (max-width: 900px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; display: flex; overflow-x: auto; gap: 6px; padding-bottom: 6px; }
+  .rail .lbl, .rail .reset { display: none; }
+  .rail button { grid-template-columns: 24px auto; white-space: nowrap; background: var(--panel); }
+  .rail .cnt { display: none; }
+  .flowgrid, .two { grid-template-columns: minmax(0, 1fr); }
+  .detail { position: static; }
+  .prog { margin-left: 0; flex: 1 1 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* engine extras */
+.fcard .big.long { font-size: 1.05rem; overflow-wrap: anywhere; }
+table.predict td { vertical-align: top; }
+table.predict tr.pok td { background: var(--ok-bg); }
+table.predict tr.pbad td { background: var(--bad-bg); }
+table.predict select { max-width: 100%; }
+table.predict .pwhy { white-space: normal; max-width: 340px; padding-top: 4px; }
+table.predict .pwhy:empty { display: none; }
+td .hn { display: inline; }
+td .hn b { margin-right: 4px; }
+{{EXTRA_CSS}}
+</style>
+
+<header class="mast">
+  <div class="mast-in">
+    <div>
+      <h1>{{TITLE}}</h1>
+      <div class="sub">{{SUBTITLE}}</div>
+    </div>
+    <div class="prog" aria-label="Progress">
+      <div class="bar"><i id="pbar"></i></div>
+      <b id="ptext">0 of 0 tasks</b>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="rail" id="rail" aria-label="Lessons"></nav>
+  <main id="main">
+
+{{LESSONS_HTML}}
+
+<!-- ============ FLASHCARDS ============ -->
+<section class="lesson" data-id="cards" data-title="Flashcards" id="fcSection" hidden>
+  <div class="lesson-head">
+    <div class="eyebrow">Revise · Any time</div>
+    <h2>Flashcards</h2>
+    <p class="lede">Pick a deck, answer in your head, then flip the card. Mark yourself honestly: "Not yet" cards come back 3 to 6 cards later. Cards come in a random order every round.</p>
+  </div>
+
+  <div class="card fc-pick">
+    <div class="decks" id="fcDecks"></div>
+    <div class="row fc-opts">
+      <label class="inline" for="fcShuffle"><input type="checkbox" id="fcShuffle" checked> Shuffle</label>
+      <label class="inline" for="fcOnlyNew"><input type="checkbox" id="fcOnlyNew"> Only cards I don't know yet</label>
+      <span class="row" id="fcDirRow" hidden><label class="inline" for="fcDir">Who's who cards show</label>
+        <select id="fcDir"><option value="plain">the plain name</option><option value="real">the real name</option></select></span>
+    </div>
+  </div>
+
+  <div class="fc-wrap" id="fcWrap">
+    <div id="fcStage" class="fc-stage">
+      <div class="fc-bar"><i id="fcBarIn"></i></div>
+      <div class="fc" id="fcCard" role="button" tabindex="0" aria-label="Flashcard">
+        <div class="fc-inner">
+          <div class="fc-face fc-front" id="fcFront"></div>
+          <div class="fc-face fc-back" id="fcBack"></div>
+        </div>
+      </div>
+      <div class="fc-actions">
+        <button class="btn" id="fcReveal">Reveal answer</button>
+        <button class="btn fc-not" id="fcNot" hidden>Not yet</button>
+        <button class="btn fc-got" id="fcGot" hidden>Got it</button>
+      </div>
+      <p class="fc-keys"><kbd>Space</kbd> reveal &nbsp;·&nbsp; <kbd>1</kbd> not yet &nbsp;·&nbsp; <kbd>2</kbd> got it</p>
+    </div>
+    <span id="fcProg" hidden></span>
+    <div class="card" id="fcEmpty" hidden><h3>Nothing left to learn here</h3><p>You know every card in this deck. Untick "Only cards I don't know yet" to go through it again.</p></div>
+    <div class="card" id="fcDone" hidden></div>
+    <div class="fc-tools"><button class="btn ghost sm" id="fcRestart">Restart this deck</button><button class="btn ghost sm" id="fcResetDeck">Forget this deck</button></div>
+  </div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section class="lesson" data-id="final" data-title="Final check" hidden>
+  <div class="lesson-head">
+    <div class="eyebrow">Final check · About 20 minutes</div>
+    <h2>Final check</h2>
+    <p class="lede">Up to twelve questions picked at random from every lesson, in every format. Only your first try counts. Get 10 in 12 right (or the same share of a shorter test) to pass. Start a new test as often as you like; each one is different.</p>
+  </div>
+  <div class="task" data-task="final-check">
+    <div class="task-h"><span class="tag">Test</span><h3>Mixed questions</h3><span class="tick">Passed</span></div>
+    <div class="fb" id="finalScore"></div>
+    <div class="qz-list" id="finalHost"></div>
+    <div class="row"><button class="btn" id="finalStart">Start a new test</button></div>
+  </div>
+</section>
+
+    <div class="navfoot" id="navfoot">
+      <button class="btn ghost" id="prevL">Previous lesson</button>
+      <button class="btn" id="nextL">Next lesson</button>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- storage ----------
+  var KEY = "{{STORAGE_KEY}}";
+  var state = { done: {}, lesson: "" };
+  try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); if (p && p.done) state = p; } } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function fb(el, cls, msg) { el.className = "fb " + cls; el.innerHTML = msg; }
+
+
+  // ---------- lab: plain names ----------
+{{NAMES_JS}}
+
+  function nm(real) {
+    var n = NAMES[real];
+    if (!n) return "<code>" + esc(real) + "</code>";
+    return '<span class="hn"><b>' + esc(n[0]) + '</b><code class="rn">' + esc(real) + "</code></span>";
+  }
+  function annotate(root) {
+    $$("code", root).forEach(function (c) {
+      if (c.classList.contains("rn") || c.closest(".code") || c.closest(".out") || c.closest(".hn")) return;
+      var t = c.textContent.trim();
+      if (NAMES[t]) { var w = document.createElement("span"); w.innerHTML = nm(t); c.replaceWith(w.firstChild); }
+    });
+  }
+
+  var lessons = $$("section.lesson");
+
+  // ---------- lab: question bank ----------
+{{QUIZ_JS}}
+
+  function norm(v) { return String(v).toLowerCase().replace(/[\s`"']/g, "").replace(/\(\)$/, ""); }
+  function shuffleArr(a) { var b = a.slice(); for (var i = b.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = b[i]; b[i] = b[j]; b[j] = t; } return b; }
+  function inOrder(arr) { for (var i = 1; i < arr.length; i++) if (arr[i] < arr[i - 1]) return true; return false; }
+  function shuffledNotSorted(n) { var idx = []; for (var i = 0; i < n; i++) idx.push(i); var s = shuffleArr(idx); var guard = 0; while (!inOrder(s) && n > 1 && guard++ < 10) s = shuffleArr(idx); return s; }
+
+  // renders one question; onResult(correct, firstTry) is called on every check
+  function renderQ(q, host, key, onResult) {
+    var el = document.createElement("div");
+    el.className = "qz";
+    var kinds = { mc: "Choose one", multi: "Tick all that apply", match: "Drag to match", order: "Drag into order", text: "Type the answer" };
+    el.innerHTML = '<div class="qz-h"><span class="qz-kind">' + kinds[q.type] + '</span><span class="qz-ok">Correct</span></div><p class="q">' + esc(q.q) + '</p><div class="qz-body"></div><div class="qz-actions row"></div><div class="fb"></div>';
+    host.appendChild(el);
+    var body = $(".qz-body", el), actions = $(".qz-actions", el), out = $(".fb", el), tries = 0;
+    function result(ok) {
+      tries++;
+      if (ok) { el.classList.add("right"); fb(out, "ok", "Right. " + esc(q.why)); }
+      else {
+        fb(out, "bad", "Not yet." + (q.hint ? " Hint: " + esc(q.hint) : "") + (tries >= 2 ? ' <button class="btn ghost sm qz-show">Show answer</button>' : ""));
+        var sb = $(".qz-show", out);
+        if (sb) sb.addEventListener("click", function () { fb(out, "info", "Answer: " + esc(answerText(q)) + ". " + esc(q.why)); });
+      }
+      onResult(ok, tries === 1);
+    }
+    if (q.type === "mc") {
+      body.innerHTML = '<div class="mcq">' + q.options.map(function (o, i) { return '<button data-i="' + i + '">' + esc(o) + "</button>"; }).join("") + "</div>";
+      $$("button", body).forEach(function (b) {
+        b.addEventListener("click", function () {
+          $$("button", body).forEach(function (x) { x.classList.remove("right", "wrong"); });
+          var ok = +b.getAttribute("data-i") === q.answer;
+          b.classList.add(ok ? "right" : "wrong"); result(ok);
+        });
+      });
+    } else if (q.type === "multi") {
+      body.innerHTML = '<div class="multi">' + q.options.map(function (o, i) { var id = key + "-m" + i; return '<label class="inline" for="' + id + '"><input type="checkbox" id="' + id + '" data-i="' + i + '"> ' + esc(o) + "</label>"; }).join("") + "</div>";
+      actions.innerHTML = '<button class="btn sm">Check</button>';
+      $("button", actions).addEventListener("click", function () {
+        var got = $$("input", body).filter(function (c) { return c.checked; }).map(function (c) { return +c.getAttribute("data-i"); }).sort().join(",");
+        result(got === q.answers.slice().sort().join(","));
+      });
+    } else if (q.type === "text") {
+      var tid = key + "-t";
+      body.innerHTML = '<input type="text" id="' + tid + '" class="qz-text" autocomplete="off" spellcheck="false" aria-label="Your answer">';
+      actions.innerHTML = '<button class="btn sm">Check</button>';
+      var inp = $("input", body);
+      function go() { var v = norm(inp.value); if (!v) return; result(q.accept.some(function (a) { return norm(a) === v; })); }
+      $("button", actions).addEventListener("click", go);
+      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+    } else if (q.type === "match") {
+      var order = shuffledNotSorted(q.pairs.length);
+      body.innerHTML = '<div class="dd"><div class="dd-slots">' + q.pairs.map(function (p, i) {
+        return '<div class="dd-row"><span class="dd-left">' + esc(p[0]) + '</span><div class="slot" data-slot="' + i + '" tabindex="0" aria-label="Drop zone for ' + esc(p[0]) + '"><span class="ph">Drop here</span></div></div>';
+      }).join("") + '</div><div class="dd-pool" aria-label="Answers">' + order.map(function (j) { return '<span class="dchip" draggable="true" tabindex="0" data-v="' + j + '">' + esc(q.pairs[j][1]) + "</span>"; }).join("") + "</div></div>" +
+        '<p class="note">Drag an answer onto a box, or tap an answer then tap a box.</p>';
+      wireMatch(body);
+      actions.innerHTML = '<button class="btn sm">Check</button><button class="btn ghost sm">Reset</button>';
+      $$("button", actions)[0].addEventListener("click", function () {
+        var slots = $$(".slot", body), ok = true, filled = true;
+        slots.forEach(function (s) { var c = $(".dchip", s); s.classList.remove("good", "badc"); if (!c) { filled = false; ok = false; return; } var r = c.getAttribute("data-v") === s.getAttribute("data-slot"); s.classList.add(r ? "good" : "badc"); if (!r) ok = false; });
+        if (!filled) { fb(out, "info", "Fill every box first."); return; }
+        result(ok);
+      });
+      $$("button", actions)[1].addEventListener("click", function () {
+        var pool = $(".dd-pool", body);
+        $$(".slot .dchip", body).forEach(function (c) { pool.appendChild(c); });
+        $$(".slot", body).forEach(function (s) { s.classList.remove("good", "badc"); if (!$(".ph", s)) s.insertAdjacentHTML("afterbegin", '<span class="ph">Drop here</span>'); });
+      });
+    } else if (q.type === "order") {
+      var ord = shuffledNotSorted(q.items.length);
+      body.innerHTML = '<ol class="ord">' + ord.map(function (j) { return '<li draggable="true" data-v="' + j + '"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="otext">' + esc(q.items[j]) + '</span><span class="obtn"><button class="btn ghost sm" data-up aria-label="Move up">&#8593;</button><button class="btn ghost sm" data-down aria-label="Move down">&#8595;</button></span></li>'; }).join("") + "</ol>" +
+        '<p class="note">Drag the rows, or use the arrows.</p>';
+      wireOrder($("ol", body));
+      actions.innerHTML = '<button class="btn sm">Check</button>';
+      $("button", actions).addEventListener("click", function () {
+        var lis = $$("li", body), ok = true;
+        lis.forEach(function (li, i) { var r = +li.getAttribute("data-v") === i; li.classList.toggle("good", r); li.classList.toggle("badc", !r); if (!r) ok = false; });
+        result(ok);
+      });
+    }
+    return el;
+  }
+  function answerText(q) {
+    if (q.type === "mc") return q.options[q.answer];
+    if (q.type === "multi") return q.answers.map(function (i) { return q.options[i]; }).join(", ");
+    if (q.type === "text") return q.accept[0];
+    if (q.type === "match") return q.pairs.map(function (p) { return p[0] + " = " + p[1]; }).join("; ");
+    if (q.type === "order") return q.items.join(" > ");
+    return "";
+  }
+
+  var dragEl = null;
+  function wireMatch(root) {
+    var selected = null;
+    function place(chip, slot) {
+      var existing = $(".dchip", slot), pool = $(".dd-pool", root);
+      if (existing && existing !== chip) pool.appendChild(existing);
+      var ph = $(".ph", slot); if (ph) ph.remove();
+      var from = chip.parentNode;
+      slot.appendChild(chip);
+      if (from && from.classList.contains("slot") && !$(".dchip", from)) from.insertAdjacentHTML("afterbegin", '<span class="ph">Drop here</span>');
+      slot.classList.remove("good", "badc");
+    }
+    function toPool(chip) {
+      var from = chip.parentNode;
+      $(".dd-pool", root).appendChild(chip);
+      if (from && from.classList.contains("slot") && !$(".dchip", from)) { from.insertAdjacentHTML("afterbegin", '<span class="ph">Drop here</span>'); from.classList.remove("good", "badc"); }
+    }
+    root.addEventListener("click", function (e) {
+      var chip = e.target.closest(".dchip"), slot = e.target.closest(".slot");
+      if (chip) {
+        if (selected === chip) { chip.classList.remove("sel"); selected = null; return; }
+        if (chip.parentNode.classList.contains("slot") && !selected) { toPool(chip); return; }
+        if (selected) selected.classList.remove("sel");
+        selected = chip; chip.classList.add("sel"); return;
+      }
+      if (slot && selected) { place(selected, slot); selected.classList.remove("sel"); selected = null; }
+    });
+    root.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      if (e.target.classList.contains("dchip") || e.target.classList.contains("slot")) { e.preventDefault(); e.target.click(); }
+    });
+    $$(".dchip", root).forEach(function (c) {
+      c.addEventListener("dragstart", function (e) { dragEl = c; c.classList.add("dragging"); try { e.dataTransfer.setData("text/plain", "x"); e.dataTransfer.effectAllowed = "move"; } catch (er) {} });
+      c.addEventListener("dragend", function () { c.classList.remove("dragging"); dragEl = null; });
+    });
+    $$(".slot", root).forEach(function (s) {
+      s.addEventListener("dragover", function (e) { if (dragEl && root.contains(dragEl)) { e.preventDefault(); s.classList.add("over"); } });
+      s.addEventListener("dragleave", function () { s.classList.remove("over"); });
+      s.addEventListener("drop", function (e) { e.preventDefault(); s.classList.remove("over"); if (dragEl && root.contains(dragEl)) place(dragEl, s); });
+    });
+    var pool = $(".dd-pool", root);
+    pool.addEventListener("dragover", function (e) { if (dragEl && root.contains(dragEl)) e.preventDefault(); });
+    pool.addEventListener("drop", function (e) { e.preventDefault(); if (dragEl && root.contains(dragEl)) toPool(dragEl); });
+  }
+  function wireOrder(ol) {
+    $$("li", ol).forEach(function (li) {
+      li.addEventListener("dragstart", function (e) { dragEl = li; li.classList.add("dragging"); try { e.dataTransfer.setData("text/plain", "x"); e.dataTransfer.effectAllowed = "move"; } catch (er) {} });
+      li.addEventListener("dragend", function () { li.classList.remove("dragging"); dragEl = null; });
+      li.addEventListener("dragover", function (e) {
+        if (!dragEl || dragEl === li || dragEl.parentNode !== ol) return;
+        e.preventDefault();
+        var r = li.getBoundingClientRect();
+        if (e.clientY < r.top + r.height / 2) ol.insertBefore(dragEl, li); else ol.insertBefore(dragEl, li.nextSibling);
+      });
+      $("[data-up]", li).addEventListener("click", function () { var p = li.previousElementSibling; if (p) ol.insertBefore(li, p); clearMarks(); });
+      $("[data-down]", li).addEventListener("click", function () { var n = li.nextElementSibling; if (n) ol.insertBefore(n, li); clearMarks(); });
+    });
+    function clearMarks() { $$("li", ol).forEach(function (x) { x.classList.remove("good", "badc"); }); }
+    ol.addEventListener("drop", function (e) { e.preventDefault(); clearMarks(); });
+  }
+
+  // one "Check your understanding" task per lesson
+  lessons.forEach(function (sec) {
+    var id = sec.getAttribute("data-id"), qs = QUIZ[id];
+    if (!qs) return;
+    var task = document.createElement("div");
+    task.className = "task quiz";
+    task.setAttribute("data-task", "quiz-" + id);
+    task.innerHTML = '<div class="task-h"><span class="tag">Quiz</span><h3>Check your understanding</h3><span class="qz-count" data-qcount="' + id + '"></span><span class="tick">Done</span></div><div class="qz-list"></div>';
+    sec.appendChild(task);
+    var list = $(".qz-list", task);
+    function count() {
+      var n = qs.filter(function (q) { return state.done["q:" + q.id]; }).length;
+      $('[data-qcount="' + id + '"]').textContent = n + " of " + qs.length + " right";
+      if (n === qs.length) { if (allTasks) complete("quiz-" + id); else { state.done["quiz-" + id] = true; save(); } }
+    }
+    qs.forEach(function (q) {
+      var el = renderQ(q, list, "q-" + q.id, function (ok) { if (ok) { state.done["q:" + q.id] = true; save(); count(); } });
+      if (state.done["q:" + q.id]) el.classList.add("right", "was");
+    });
+    count();
+  });
+
+  // final mixed test
+  (function () {
+    var host = $("#finalHost");
+    if (!host) return;
+    var pool = [];
+    Object.keys(QUIZ).forEach(function (k) { QUIZ[k].forEach(function (q) { pool.push(q); }); });
+    function start() {
+      host.innerHTML = "";
+      var N = Math.min(12, pool.length), NEED = Math.ceil(N * 10 / 12);
+      var pick = shuffleArr(pool).slice(0, N), firsts = {}, answered = 0;
+      var score = $("#finalScore");
+      fb(score, "info", "0 of " + N + " answered. Your score counts first tries only.");
+      pick.forEach(function (q, i) {
+        renderQ(q, host, "fin-" + i + "-" + q.id, function (ok, first) {
+          if (firsts[q.id] === undefined) { firsts[q.id] = ok && first; answered++; }
+          var right = Object.keys(firsts).filter(function (k) { return firsts[k]; }).length;
+          if (answered < N) fb(score, "info", answered + " of " + N + " answered, " + right + " right first time.");
+          else if (right >= NEED) { fb(score, "ok", "Score " + right + " of " + N + ". {{PASS_MESSAGE}}"); complete("final-check"); }
+          else fb(score, "bad", "Score " + right + " of " + N + ". You need " + NEED + " to pass. Revisit the lessons behind the ones you missed, then start a new test.");
+        });
+      });
+    }
+    $("#finalStart").addEventListener("click", function () { start(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    start();
+  })();
+  var allTasks = $$("[data-task]").map(function (t) { return t.getAttribute("data-task"); });
+
+  function complete(id) {
+    if (state.done[id]) return;
+    state.done[id] = true; save(); paint();
+  }
+  function paint() {
+    $$("[data-task]").forEach(function (t) { t.classList.toggle("done", !!state.done[t.getAttribute("data-task")]); });
+    var n = allTasks.filter(function (t) { return state.done[t]; }).length;
+    $("#ptext").textContent = n + " of " + allTasks.length + " tasks";
+    $("#pbar").style.width = (100 * n / allTasks.length) + "%";
+    buildRail();
+  }
+
+  // ---------- rail and navigation ----------
+  function buildRail() {
+    var rail = $("#rail");
+    var html = '<div class="lbl">Lessons</div>';
+    lessons.forEach(function (sec, i) {
+      var id = sec.getAttribute("data-id");
+      var ts = $$("[data-task]", sec).map(function (t) { return t.getAttribute("data-task"); });
+      var d = ts.filter(function (t) { return state.done[t]; }).length;
+      var all = ts.length > 0 && d === ts.length;
+      html += '<button class="' + (all ? "done" : "") + '" data-go="' + id + '" aria-current="' + (state.lesson === id) + '">' +
+        '<span class="n">' + (all ? "&#10003;" : (i + 1)) + '</span><span>' + esc(sec.getAttribute("data-title")) + '</span><span class="cnt">' + (ts.length ? d + "/" + ts.length : "") + "</span></button>";
+    });
+    html += '<button class="reset" id="resetAll" style="display:block;grid-template-columns:1fr">Reset my progress</button>';
+    rail.innerHTML = html;
+    $$("[data-go]", rail).forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-go"), true); }); });
+    var rs = $("#resetAll");
+    rs.addEventListener("click", function () {
+      if (rs.getAttribute("data-armed")) { state = { done: {}, lesson: state.lesson }; save(); location.reload(); return; }
+      rs.setAttribute("data-armed", "1"); rs.textContent = "Click again to clear all ticks";
+    });
+  }
+  function idx() { for (var i = 0; i < lessons.length; i++) if (lessons[i].getAttribute("data-id") === state.lesson) return i; return 0; }
+  function show(id, scroll) {
+    if (!lessons.some(function (s) { return s.getAttribute("data-id") === id; })) id = lessons[0].getAttribute("data-id");
+    state.lesson = id; save();
+    lessons.forEach(function (s) { s.hidden = s.getAttribute("data-id") !== id; });
+    var i = idx();
+    $("#prevL").hidden = i === 0;
+    $("#nextL").hidden = i === lessons.length - 1;
+    buildRail();
+    try { history.replaceState(null, "", "#" + id); } catch (e) {}
+    if (scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  $("#prevL").addEventListener("click", function () { show(lessons[Math.max(0, idx() - 1)].getAttribute("data-id"), true); });
+  $("#nextL").addEventListener("click", function () { show(lessons[Math.min(lessons.length - 1, idx() + 1)].getAttribute("data-id"), true); });
+
+  // ---------- python highlighter ----------
+  var KW = /^(def|return|if|elif|else|for|in|while|True|False|None|try|except|finally|import|from|as|with|not|and|or|break|continue|is|lambda)$/;
+  function hl(line) {
+    var re = /(#.*$)|(f?"(?:[^"\\]|\\.)*"|f?'(?:[^'\\]|\\.)*')|([A-Za-z_][A-Za-z0-9_]*)|(\b\d+\b)/g;
+    var out = "", last = 0, m;
+    while ((m = re.exec(line)) !== null) {
+      out += esc(line.slice(last, m.index));
+      if (m[1]) out += '<span class="c">' + esc(m[1]) + "</span>";
+      else if (m[2]) out += '<span class="s">' + esc(m[2]) + "</span>";
+      else if (m[3]) out += KW.test(m[3]) ? '<span class="k">' + m[3] + "</span>" : esc(m[3]);
+      else if (m[4]) out += '<span class="nm">' + m[4] + "</span>";
+      last = re.lastIndex;
+    }
+    return out + esc(line.slice(last));
+  }
+  function renderCode(el, src, start) {
+    var lines = src.replace(/\n$/, "").split("\n");
+    el.innerHTML = lines.map(function (l, i) { return '<div class="l" data-i="' + i + '" data-n="' + ((start || 1) + i) + '">' + (hl(l) || " ") + "</div>"; }).join("");
+    return lines.length;
+  }
+  function highlight(el, from, to) { $$(".l", el).forEach(function (l, i) { l.classList.toggle("hl", i >= from && i <= to); }); }
+
+  // ---------- generic multiple choice ----------
+  var mcqTask = {}; // mcq id -> task id
+  $$("[data-mcq]").forEach(function (box) {
+    var task = box.closest("[data-task]").getAttribute("data-task");
+    mcqTask[box.getAttribute("data-mcq")] = task;
+    $$("button", box).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var right = b.hasAttribute("data-right");
+        $$("button", box).forEach(function (x) { x.classList.remove("right", "wrong"); });
+        b.classList.add(right ? "right" : "wrong");
+        fb($(".fb", box), right ? "ok" : "bad", right ? "Right." : "Not that one. Try again.");
+        if (right) {
+          state.done["mcq:" + box.getAttribute("data-mcq")] = true; save();
+          var boxes = $$("[data-mcq]", box.closest("[data-task]"));
+          if (boxes.every(function (x) { return state.done["mcq:" + x.getAttribute("data-mcq")]; })) complete(task);
+        }
+      });
+    });
+  });
+
+  // ---------- widget helpers ----------
+  function shuffle(a) { return shuffleArr(a); }
+  function code(sel, lines, start) { renderCode($(sel), lines.join("\n"), start || 1); }
+
+  // click-in-order task: a wrong click starts again
+  function orderTask(poolSel, pickedSel, fbSel, steps, taskId, okMsg) {
+    var pool = $(poolSel), picked = [];
+    pool.innerHTML = shuffle(steps).map(function (s) { return '<button class="chip" data-step="' + esc(s) + '">' + esc(s) + "</button>"; }).join("");
+    $$(".chip", pool).forEach(function (c) {
+      c.addEventListener("click", function () {
+        var s = c.getAttribute("data-step");
+        if (s === steps[picked.length]) {
+          picked.push(s); c.disabled = true;
+          $(pickedSel).innerHTML = picked.map(function (p, i) { return '<span class="pill p-3">' + (i + 1) + ". " + esc(p) + "</span>"; }).join("");
+          if (picked.length === steps.length) { fb($(fbSel), "ok", okMsg); complete(taskId); }
+          else fb($(fbSel), "", "");
+        } else {
+          fb($(fbSel), "bad", "<b>" + esc(s) + "</b> isn't next. Starting again.");
+          picked = []; $(pickedSel).innerHTML = "";
+          $$(".chip", pool).forEach(function (x) { x.disabled = false; });
+        }
+      });
+    });
+  }
+
+  // a table of rows, each with a dropdown of outcomes. rows: [html, correctIndex, why]
+  function predictTable(host, taskId, opts, rows) {
+    var el = $(host);
+    el.innerHTML = '<div class="scroll"><table class="t predict"><thead><tr><th>Row</th><th>What happens?</th></tr></thead><tbody>' + rows.map(function (r, i) {
+      return '<tr data-r="' + i + '"><td class="wrap">' + r[0] + '</td><td><select id="' + taskId + "-" + i + '" aria-label="Outcome for row ' + (i + 1) + '"><option value="">Choose</option>' +
+        opts.map(function (o, j) { return '<option value="' + j + '">' + esc(o) + "</option>"; }).join("") + '</select><div class="note pwhy"></div></td></tr>';
+    }).join("") + '</tbody></table></div><div class="row"><button class="btn sm">Check</button></div><div class="fb"></div>';
+    $(".btn", el).addEventListener("click", function () {
+      var right = 0, blank = false;
+      $$("tr[data-r]", el).forEach(function (tr) {
+        var i = +tr.getAttribute("data-r"), v = $("select", tr).value;
+        tr.classList.remove("pok", "pbad");
+        $(".pwhy", tr).textContent = "";
+        if (v === "") { blank = true; return; }
+        var ok = +v === rows[i][1];
+        tr.classList.add(ok ? "pok" : "pbad");
+        if (ok) { right++; $(".pwhy", tr).textContent = rows[i][2]; }
+      });
+      if (blank) { fb($(".fb", el), "info", "Choose an outcome for every row first."); return; }
+      if (right === rows.length) { fb($(".fb", el), "ok", "All " + rows.length + " right."); complete(taskId); }
+      else fb($(".fb", el), "bad", right + " of " + rows.length + " right. Change the red ones and check again.");
+    });
+  }
+
+  // ---------- lab: lesson widgets ----------
+{{WIDGETS_JS}}
+
+  // ---------- generic renderers: run diagram, who's who, bug hunt, hands-on tasks ----------
+
+  (function () {
+    if (typeof flowNodes === "undefined" || !$("#flow")) return;
+    var f = $("#flow"), h = "";
+    flowNodes.forEach(function (n, i) {
+      if (i) h += '<div class="arrow" aria-hidden="true">&#9660;</div>';
+      var hum = n.h || (NAMES[n.n] ? NAMES[n.n][0] : "");
+      h += '<button class="node' + (n.nb ? " nb" : "") + '" data-node="' + i + '" aria-pressed="false"><span class="t">' + n.t + '</span><span class="hname">' + esc(hum) + '</span><span class="nmn">' + esc(n.n) + "</span></button>";
+    });
+    f.innerHTML = h;
+    $$(".node", f).forEach(function (b) {
+      b.addEventListener("click", function () {
+        $$(".node", f).forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true");
+        var n = flowNodes[+b.getAttribute("data-node")];
+        var hum = n.h || (NAMES[n.n] ? NAMES[n.n][0] : n.n);
+        $("#flowDetail").innerHTML = '<div class="eyebrow">' + n.t + '</div><h3>' + esc(hum) + '</h3><div class="codecap">[' + esc(n.n) + ']</div><div class="prose">' + n.d + "</div>";
+        annotate($("#flowDetail"));
+      });
+    });
+  })();
+
+  (function () {
+    if (!$("#cast")) return;
+    var groups = {}, order = [];
+    Object.keys(NAMES).forEach(function (k) { var g = NAMES[k][2]; if (!groups[g]) { groups[g] = []; order.push(g); } groups[g].push(k); });
+    $("#cast").innerHTML = '<input type="text" id="castSearch" class="cast-search" placeholder="Search a name, e.g. Wrapper or Run diary" aria-label="Search names">' + order.map(function (g, gi) {
+      return '<details class="castg"' + (gi < 2 ? " open" : "") + "><summary>" + esc(g) + '<span class="cn">' + groups[g].length + '</span></summary><div class="cast-rows">' + groups[g].map(function (k) {
+        return '<div class="cast-row" data-s="' + esc((NAMES[k][0] + " " + k + " " + NAMES[k][1]).toLowerCase()) + '"><div class="who"><b>' + esc(NAMES[k][0]) + "</b><code>[" + esc(k) + ']</code></div><div class="job">' + esc(NAMES[k][1]) + "</div></div>";
+      }).join("") + "</div></details>";
+    }).join("");
+    $("#castSearch").addEventListener("input", function () {
+      var v = this.value.trim().toLowerCase();
+      $$(".castg").forEach(function (g) {
+        var any = false;
+        $$(".cast-row", g).forEach(function (r) { var hit = !v || r.getAttribute("data-s").indexOf(v) >= 0; r.hidden = !hit; if (hit) any = true; });
+        g.hidden = !any;
+        if (v) g.open = any;
+      });
+    });
+  })();
+
+  (function () {
+    if (typeof bugs === "undefined" || !$("#bugList")) return;
+    $("#bugList").innerHTML = bugs.map(function (b) {
+      return '<div class="task" data-task="' + b.id + '"><div class="task-h"><span class="tag">Find it</span><h3>' + esc(b.title) + '</h3><span class="tick">Found</span></div><div class="code pick" data-bug="' + b.id + '"></div><div class="fb" data-bugfb="' + b.id + '"></div></div>';
+    }).join("");
+    bugs.forEach(function (b) {
+      var el = $('[data-bug="' + b.id + '"]');
+      renderCode(el, b.src.join("\n"), b.start);
+      $$(".l", el).forEach(function (l) {
+        l.setAttribute("tabindex", "0"); l.setAttribute("role", "button");
+        function go() {
+          var i = +l.getAttribute("data-i");
+          $$(".l", el).forEach(function (x) { x.classList.remove("wrong"); });
+          if (b.line.indexOf(i) >= 0) { l.classList.add("right"); fb($('[data-bugfb="' + b.id + '"]'), "ok", b.why); complete(b.id); }
+          else {
+            l.classList.add("wrong");
+            b.misses = (b.misses || 0) + 1;
+            if (b.misses >= 2) {
+              b.line.forEach(function (n) { var t = $('.l[data-i="' + n + '"]', el); if (t) t.classList.add("hl"); });
+              fb($('[data-bugfb="' + b.id + '"]'), "info", "The highlighted line is the problem. " + b.why + " Click it to tick this off.");
+            } else fb($('[data-bugfb="' + b.id + '"]'), "bad", "Not that line. Read it as Python would run it.");
+          }
+        }
+        l.addEventListener("click", go);
+        l.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+      });
+    });
+  })();
+
+  (function () {
+    if (typeof fab === "undefined" || !$("#fabTasks")) return;
+    $("#fabTasks").innerHTML = fab.map(function (f, k) {
+      return '<div class="task" data-task="' + f.id + '"><div class="task-h"><span class="tag">' + (k + 1) + " of " + fab.length + "</span><h3>" + esc(f.title) + '</h3><span class="tick">Done</span></div>' +
+        '<div class="prose"><p>' + f.how + '</p></div><div class="codecap">' + f.lang + '</div><div class="code" data-fab="' + f.id + '"></div>' +
+        '<div class="copyrow"><button class="btn ghost sm" data-copy="' + f.id + '">Copy</button></div>' +
+        (f.after ? '<p class="note">' + esc(f.after) + "</p>" : "") +
+        '<label class="check"><input type="checkbox" data-fabdone="' + f.id + '"' + (state.done[f.id] ? " checked" : "") + '><span>I have done this</span></label></div>';
+    }).join("");
+    fab.forEach(function (f) {
+      renderCode($('[data-fab="' + f.id + '"]'), f.code, 1);
+      var btn = $('[data-copy="' + f.id + '"]');
+      btn.addEventListener("click", function () {
+        function fallback() {
+          var r = document.createRange(); r.selectNodeContents($('[data-fab="' + f.id + '"]'));
+          var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected, press Ctrl+C";
+        }
+        try {
+          navigator.clipboard.writeText(f.code).then(function () { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1500); }, fallback);
+        } catch (e) { fallback(); }
+      });
+      $('[data-fabdone="' + f.id + '"]').addEventListener("change", function () {
+        if (this.checked) complete(f.id); else { delete state.done[f.id]; save(); paint(); }
+      });
+    });
+  })();
+
+  allTasks = $$("[data-task]").map(function (t) { return t.getAttribute("data-task"); });
+
+  function hash(s) { var h = 2166136261; for (var k = 0; k < s.length; k++) { h ^= s.charCodeAt(k); h = Math.imul(h, 16777619); } return ("00000000" + (h >>> 0).toString(16)).slice(-8); }
+
+  // ---------- lab: flashcard decks ----------
+{{DECKS_JS}}
+
+  if (Object.keys(NAMES).length) DECKS.push({ id: "names", name: "Who's who", names: true, cards: Object.keys(NAMES).map(function (k) { return [k, NAMES[k][0], NAMES[k][1]]; }) });
+  // every card remembers its own deck, so the mixed deck shares progress with the lesson decks
+  DECKS.forEach(function (d) { d.cards.forEach(function (c) { c.src = d; }); });
+  DECKS.unshift({ id: "mix", name: "Everything, mixed", mix: true, cards: [].concat.apply([], DECKS.map(function (d) { return d.cards; })) });
+  state.cards = state.cards || {};
+
+  function cid(deck, c) { return (c.src || deck).id + ":" + hash(c[0]); }
+  function fmt(t) { return esc(t).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function deckById(id) { for (var i = 0; i < DECKS.length; i++) if (DECKS[i].id === id) return DECKS[i]; return DECKS[0]; }
+  var fc = { deck: DECKS[0], queue: [], pos: 0, flipped: false, first: {}, missed: {} };
+
+  function drawDecks() {
+    $("#fcDecks").innerHTML = DECKS.map(function (d) {
+      var known = d.cards.filter(function (c) { return state.cards[cid(d, c)] === "known"; }).length;
+      return '<button class="deck' + (d === fc.deck ? " on" : "") + '" data-deck="' + d.id + '" title="' + known + " of " + d.cards.length + ' known"><span class="dn">' + esc(d.name) + '</span><span class="dk">' + known + "/" + d.cards.length + '</span><i class="dbar" style="width:' + (100 * known / d.cards.length) + '%"></i></button>';
+    }).join("");
+    $$("#fcDecks .deck").forEach(function (b) { b.addEventListener("click", function () { pickDeck(b.getAttribute("data-deck")); startDeck(); var w = $("#fcWrap"); if (w.scrollIntoView) w.scrollIntoView({ behavior: "smooth", block: "start" }); }); });
+    $("#fcDirRow").hidden = !(fc.deck.names || fc.deck.mix);
+  }
+  function pickDeck(id) { fc.deck = deckById(id); drawDecks(); }
+  function startDeck(onlyIds) {
+    var d = fc.deck, list = d.cards.slice();
+    if (onlyIds) list = list.filter(function (c) { return onlyIds[cid(d, c)]; });
+    else if ($("#fcOnlyNew").checked) list = list.filter(function (c) { return state.cards[cid(d, c)] !== "known"; });
+    if (shuffleOn()) list = shuffleArr(list);
+    fc.queue = list; fc.pos = 0; fc.first = {}; fc.missed = {};
+    $("#fcDone").hidden = true;
+    if (!list.length) { $("#fcStage").hidden = true; $("#fcEmpty").hidden = false; return; }
+    $("#fcEmpty").hidden = true; $("#fcStage").hidden = false;
+    drawCard();
+  }
+  function drawCard() {
+    var c = fc.queue[fc.pos], d = c.src || fc.deck, front, back, hint, qs;
+    fc.flipped = false;
+    $("#fcCard").classList.remove("flipped");
+    $("#fcCard").setAttribute("aria-label", "Flashcard. Press to reveal the answer.");
+    if (d.names) {
+      var realFirst = $("#fcDir").value === "real";
+      var ask = realFirst ? "What is its plain name and job?" : "What is the real name?";
+      front = '<div class="fc-q' + (realFirst ? " mono" : "") + '">' + esc(realFirst ? c[0] : c[1]) + '</div>';
+      hint = ask;
+      qs = esc(realFirst ? c[0] : c[1]);
+      back = realFirst ? '<div class="fc-a"><b>' + esc(c[1]) + "</b></div><p>" + esc(c[2]) + "</p>"
+                       : '<div class="fc-a mono">' + esc(c[0]) + "</div><p>" + esc(c[2]) + "</p>";
+    } else {
+      front = '<div class="fc-q">' + fmt(c[0]) + '</div>';
+      hint = "Answer in your head, then click the card";
+      qs = fmt(c[0]);
+      back = '<div class="fc-a">' + fmt(c[1]) + "</div>";
+    }
+    var again = Object.keys(fc.missed).length;
+    var top = '<div class="fc-top"><span class="fc-deck">' + esc(d.name) + '</span><span class="fc-num">' +
+      (again ? '<span class="fc-again">' + again + " coming back</span> &nbsp;·&nbsp; " : "") + (fc.pos + 1) + " / " + fc.queue.length + "</span></div>";
+    $("#fcFront").innerHTML = top + '<div class="fc-body">' + front + '</div><div class="fc-hint">' + hint + "</div>";
+    $("#fcBack").innerHTML = top + '<div class="fc-body"><div class="fc-qs">' + qs + "</div>" + back + '</div><div class="fc-hint">Did you get it?</div>';
+    if (!d.names) { annotate($("#fcFront")); annotate($("#fcBack")); }
+    $("#fcNot").hidden = $("#fcGot").hidden = true;
+    $("#fcReveal").hidden = false;
+    $("#fcProg").textContent = "Card " + (fc.pos + 1) + " of " + fc.queue.length + (again ? " · " + again + " coming back round" : "");
+    $("#fcBarIn").style.width = (100 * fc.pos / fc.queue.length) + "%";
+  }
+  function flip() {
+    if (!fc.queue.length || !$("#fcDone").hidden) return;
+    fc.flipped = !fc.flipped;
+    $("#fcCard").classList.toggle("flipped", fc.flipped);
+    $("#fcNot").hidden = $("#fcGot").hidden = !fc.flipped;
+    $("#fcReveal").hidden = fc.flipped;
+  }
+  function grade(ok) {
+    if (!fc.flipped) return;
+    var d = fc.deck, c = fc.queue[fc.pos], id = cid(d, c);
+    if (fc.first[id] === undefined) fc.first[id] = ok;
+    state.cards[id] = ok ? "known" : "learning"; save();
+    if (ok) delete fc.missed[id];
+    else { fc.missed[id] = true; var at = Math.min(fc.pos + 3 + Math.floor(Math.random() * 4), fc.queue.length); fc.queue.splice(at, 0, c); }
+    fc.pos++;
+    drawDecks();
+    if (fc.pos >= fc.queue.length) return finish();
+    drawCard();
+  }
+  function finish() {
+    var ids = Object.keys(fc.first), right = ids.filter(function (k) { return fc.first[k]; }).length, wrongIds = {};
+    ids.forEach(function (k) { if (!fc.first[k]) wrongIds[k] = true; });
+    $("#fcBarIn").style.width = "100%";
+    $("#fcStage").hidden = true;
+    var box = $("#fcDone"); box.hidden = false;
+    var nWrong = ids.length - right;
+    box.innerHTML = "<h3>Round done</h3><p>" + ids.length + " cards. " + right + " right first time" + (nWrong ? ", " + nWrong + " needed another go." : ". Every one.") + "</p>" +
+      '<div class="row">' + (nWrong ? '<button class="btn" id="fcAgainMissed">Again with just the ' + nWrong + " missed</button>" : "") +
+      '<button class="btn ghost" id="fcAgainAll">Run the whole deck again</button></div>';
+    if (nWrong) $("#fcAgainMissed").addEventListener("click", function () { startDeck(wrongIds); });
+    $("#fcAgainAll").addEventListener("click", function () { startDeck(); });
+  }
+  $("#fcCard").addEventListener("click", flip);
+  $("#fcReveal").addEventListener("click", flip);
+  $("#fcGot").addEventListener("click", function () { grade(true); });
+  $("#fcNot").addEventListener("click", function () { grade(false); });
+  $("#fcDir").addEventListener("change", function () { if (fc.queue.length && $("#fcDone").hidden) drawCard(); });
+  // the mixed deck is always shuffled
+  function shuffleOn() { return fc.deck.mix || $("#fcShuffle").checked; }
+  $("#fcOnlyNew").addEventListener("change", function () { startDeck(); });
+  $("#fcShuffle").addEventListener("change", function () { startDeck(); });
+  $("#fcRestart").addEventListener("click", function () { startDeck(); });
+  $("#fcResetDeck").addEventListener("click", function () {
+    var b = this;
+    if (!b.getAttribute("data-armed")) { b.setAttribute("data-armed", "1"); b.textContent = "Click again to forget this deck"; return; }
+    fc.deck.cards.forEach(function (c) { delete state.cards[cid(fc.deck, c)]; }); save();
+    b.removeAttribute("data-armed"); b.textContent = "Forget this deck"; drawDecks(); startDeck();
+  });
+  document.addEventListener("keydown", function (e) {
+    if ($("#fcSection").hidden) return;
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "select" || tag === "textarea") return;
+    if (tag === "button" && e.target.id !== "fcReveal" && (e.key === " " || e.key === "Enter")) return;
+    if (e.key === " " || e.key === "Enter") { e.preventDefault(); if (!fc.flipped) flip(); }
+    else if (e.key === "1" && fc.flipped) grade(false);
+    else if (e.key === "2" && fc.flipped) grade(true);
+  });
+
+  // a revise button in every lesson that has a deck
+  lessons.forEach(function (sec) {
+    var id = sec.getAttribute("data-id"), d = DECKS.filter(function (x) { return x.id === id; })[0];
+    if (!d) return;
+    var el = document.createElement("div");
+    el.className = "card revise";
+    el.innerHTML = '<div class="row" style="justify-content:space-between"><div style="display:grid;gap:2px"><h3>Revise with flashcards</h3><p class="note">' + d.cards.length + ' cards on this lesson. Click a card to reveal the answer.</p></div><button class="btn" data-open-deck="' + d.id + '">Open flashcards</button></div>';
+    var quiz = $(".task.quiz", sec);
+    if (quiz) sec.insertBefore(el, quiz); else sec.appendChild(el);
+    $("[data-open-deck]", el).addEventListener("click", function () { pickDeck(d.id); show("cards", true); startDeck(); });
+  });
+
+  drawDecks();
+  startDeck();
+
+  // plain names on every bare file, table and parameter mention
+  annotate(document);
+
+  // restore feedback for done tasks and start
+  paint();
+  var start = (location.hash || "").replace("#", "") || state.lesson || lessons[0].getAttribute("data-id");
+  show(start, false);
+})();
+</script>

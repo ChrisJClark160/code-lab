@@ -1,0 +1,16 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
+  "name": "code-lab",
+  "description": "Turn any codebase into an interactive training lab.",
+  "owner": {
+    "name": "Chris Clark"
+  },
+  "plugins": [
+    {
+      "name": "code-lab",
+      "description": "Build an interactive Code Lab page that teaches how a codebase works.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "code-lab",
+  "version": "0.1.0",
+  "description": "Build an interactive Code Lab web page that teaches how a codebase works: lessons in run order, plain names beside real file names, simulators, quizzes, bug hunt, hands-on tasks, flashcards and a final test.",
+  "author": {
+    "name": "Chris Clark",
+    "url": "https://github.com/ChrisJClark160"
+  }
+}

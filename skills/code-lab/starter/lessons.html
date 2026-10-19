@@ -1,0 +1,56 @@
+<!-- ============ LESSON 1 ============ -->
+<section class="lesson" data-id="flow" data-title="The run" hidden>
+  <div class="lesson-head">
+    <div class="eyebrow">Lesson 1 · About 10 minutes</div>
+    <h2>The run, end to end</h2>
+    <p class="lede"><code>tidy_csv.py</code> reads a CSV file, cleans each row with <code>clean_row</code>, and writes a tidy copy. Click each box to see what it does.</p>
+  </div>
+
+  <div class="flowgrid">
+    <div class="flow" id="flow"></div>
+    <div class="card detail" id="flowDetail"><h3>Click a box</h3><p class="note">Dashed boxes are functions.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Who's who</h3>
+    <div class="cast" id="cast"></div>
+  </div>
+
+  <div class="card">
+    <div class="codecap"><b>Clean one row</b> tidy_csv.py</div>
+    <div class="code" id="codeClean"></div>
+  </div>
+
+  <div class="task" data-task="flow-order">
+    <div class="task-h"><span class="tag">Do it</span><h3>Put the run in order</h3><span class="tick">Done</span></div>
+    <div class="row" id="orderPool"></div>
+    <div class="row" id="orderPicked" aria-live="polite"></div>
+    <div class="fb" id="orderFb"></div>
+  </div>
+
+  <div class="task" data-task="row-predict">
+    <div class="task-h"><span class="tag">Predict</span><h3>What happens to each row?</h3><span class="tick">Done</span></div>
+    <div id="rowPredict"></div>
+  </div>
+
+  <div class="task" data-task="flow-mcq">
+    <div class="task-h"><span class="tag">Check</span><h3>One quick question</h3><span class="tick">Done</span></div>
+    <div class="mcq" data-mcq="m1">
+      <p class="q">Where do the input and output paths come from?</p>
+      <button>They are typed in the script</button>
+      <button data-right><code>settings.yml</code></button>
+      <div class="fb"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LESSON 2 ============ -->
+<section class="lesson" data-id="bugs" data-title="Bug hunt and real tasks" hidden>
+  <div class="lesson-head">
+    <div class="eyebrow">Lesson 2 · About 15 minutes</div>
+    <h2>Bug hunt, then do it for real</h2>
+    <p class="lede">Click the line that causes the bug, then run the script yourself.</p>
+  </div>
+  <div id="bugList" style="display:grid;gap:22px"></div>
+  <div id="fabTasks" style="display:grid;gap:18px"></div>
+</section>
