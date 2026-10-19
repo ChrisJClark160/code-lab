@@ -30,7 +30,7 @@ file format, HTML convention and JS helper.
    tables, a short code snippet, and the rule and why it exists. Then 1 to 3 hands-on tasks,
    then the quiz the engine adds from `QUIZ`. Never test something the lesson hasn't taught.
 5. **Give everything a plain name.** In `NAMES`, give each real file, table, setting or function
-   a plain name for the job it does ("The Courier" for `run_g2c.py`). Write only the real name
+   a plain name for the job it does ("The Tidier" for `tidy_csv.py`). Write only the real name
    in `<code>`, and the engine adds the plain name in front. Never write the plain name yourself
    just before the code, or it appears twice.
 6. **Make tasks interactive and true to the code.** Use the built-in widgets (order chips,

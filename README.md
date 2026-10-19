@@ -6,7 +6,7 @@ member can learn how the code works by doing things with it.
 Each lab is a single HTML page with:
 
 - lessons in the order the code runs, each with a time estimate
-- a plain name beside every real file, table and setting ("The Courier" for `run_g2c.py`)
+- a plain name beside every real file, table and setting ("The Tidier" for `tidy_csv.py`)
 - a clickable run diagram and a searchable "Who's who"
 - hands-on tasks: put steps in order, predict outcomes, and simulators of the code's rules
 - a quiz per lesson (multiple choice, select all, drag to match, drag to order, typed)
